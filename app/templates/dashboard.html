@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% if show_edit_form %}
+        <!-- Customer Profile / Sign Up Form -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    {% if customer %}
+                        <h3>Edit Your Profile</h3>
+                    {% else %}
+                        <h3>Welcome! Complete Your Profile</h3>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if not customer %}
+                        <p>It looks like you're new here. Please fill out the form below to create your customer profile.</p>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('main.dashboard') }}">
+                        {{ form.hidden_tag() }} {# CSRF token #}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                {{ form.forename.label }}
+                                {{ form.forename(class="form-control") }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {{ form.surname.label }}
+                                {{ form.surname(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form.phone.label }}
+                            {{ form.phone(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check">
+                                {{ form.marketing_email(class="form-check-input") }}
+                                {{ form.marketing_email.label(class="form-check-label") }}
+                            </div>
+                            <div class="form-check">
+                                {{ form.marketing_text(class="form-check-input") }}
+                                {{ form.marketing_text.label(class="form-check-label") }}
+                            </div>
+                        </div>
+                        {% if customer %}
+                            {{ form.submit(class="btn btn-primary", value="Update Profile") }}
+                            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        {% else %}
+                            {{ form.submit(class="btn btn-success", value="Create Profile") }}
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Summary View -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Points Balance</h5>
+                    <p class="display-4">{{ points_balance }}</p>
+                    <small class="text-muted"></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+             <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Loyalty Pass</h5>
+                    <p>Add your loyalty card to your phone's digital wallet for easy access.</p>
+                    <a href="{{ url_for('wallet.generate_pass') }}" class="btn btn-dark">
+                        Add to Apple Wallet
+                    </a>
+                    <p class="mt-2 text-muted"><small>TODO: Implement real pass generation</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 text-center">
+            <a href="{{ url_for('main.dashboard', edit='true') }}">Edit my Profile</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
