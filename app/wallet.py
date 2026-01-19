@@ -1,7 +1,7 @@
-from flask import Blueprint, Response, session, redirect, url_for, flash, send_file
+from flask import Blueprint, Response, session, redirect, url_for, flash
 import os
 import io
-from passbook.models import Pass, Barcode, StoreCard
+from pkpass.models import Pass, StoreCard, BarcodeFormat
 import barcode
 from barcode.writer import ImageWriter
 from app.epos_client import EposNowClient
@@ -22,34 +22,27 @@ def generate_pass():
         return redirect(url_for('main.dashboard'))
 
     # --- Pass Generation ---
+    pass_obj = Pass(
+        pass_type_id='pass.com.example.loyalty',
+        team_id='YOUR_TEAM_ID', # <-- IMPORTANT: Replace with your Team ID
+        organization_name='LoyaltyHI'
+    )
+
     card = StoreCard()
     card.add_primary_field('name', customer.get('Forename', ''), 'Member Name')
     card.add_secondary_field('points', str(customer.get('CurrentPoints', 0)), 'Points')
+    pass_obj.add_card(card)
 
     # Generate Barcode
-    code128 = barcode.get_barcode_class('code128')
     barcode_data = customer['CardNumber']
-    barcode_image = code128(barcode_data, writer=ImageWriter())
-    barcode_buffer = io.BytesIO()
-    barcode_image.write(barcode_buffer)
-
-    pass_barcode = Barcode(message=barcode_data, format='PKBarcodeFormatCode128')
-    card.barcode = pass_barcode
-
-    # Create the pass
-    pass_obj = Pass(card, \
-                    passTypeIdentifier='pass.com.example.loyalty', \
-                    organizationName='LoyaltyHI', \
-                    teamIdentifier='YOUR_TEAM_ID') # <-- IMPORTANT: Replace with your Team ID
+    pass_obj.add_barcode(BarcodeFormat.CODE_128, barcode_data)
 
     # Add placeholder assets
-    pass_obj.add_file('icon.png', open('app/static/images/icon.png', 'rb').read())
-    pass_obj.add_file('icon@2x.png', open('app/static/images/icon@2x.png', 'rb').read())
-    pass_obj.add_file('logo.png', open('app/static/images/logo.png', 'rb').read())
+    pass_obj.add_file('icon.png', 'app/static/images/icon.png')
+    pass_obj.add_file('icon@2x.png', 'app/static/images/icon@2x.png')
+    pass_obj.add_file('logo.png', 'app/static/images/logo.png')
 
     # --- Signing (Placeholder) ---
-    # IMPORTANT: You need to replace these with your actual certificate and key files.
-    # You will get these from your Apple Developer account.
     cert_path = 'app/certificates/pass.com.example.loyalty.pem'
     key_path = 'app/certificates/pass.com.example.loyalty.key'
     wwdr_cert_path = 'app/certificates/AppleWWDRCA.pem'
@@ -64,8 +57,9 @@ def generate_pass():
         open(wwdr_cert_path, 'w').close()
 
     try:
-        pass_obj.create(cert_path, key_path, wwdr_cert_path, password)
-        pass_bytes = pass_obj.getvalue()
+        pass_bytes = pass_obj.create(
+            cert_path, key_path, wwdr_cert_path, password
+        )
     except Exception as e:
         flash(f'Could not sign the pass. Please ensure your certificates are correctly configured. Error: {e}', 'danger')
         return redirect(url_for('main.dashboard'))
