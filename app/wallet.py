@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, session, redirect, url_for, flash
 import os
 import io
-from pkpass.models import Pass, StoreCard, BarcodeFormat
+from py_pkpass.models import Pass, StoreCard, BarcodeFormat
 import barcode
 from barcode.writer import ImageWriter
 from app.epos_client import EposNowClient
