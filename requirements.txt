@@ -2,7 +2,7 @@ Flask==2.2.5
 Flask-SQLAlchemy==2.5.1
 gunicorn==21.2.0
 SQLAlchemy==1.4.46
-python-dotenv==1.0.0
+python-dotenv==0.21.1
 Flask-WTF==1.2.1
 email-validator==2.1.1
 requests==2.31.0
