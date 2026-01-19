@@ -6,8 +6,8 @@ MJ_APIKEY_PUBLIC = os.environ.get('MJ_APIKEY_PUBLIC')
 MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PRIVATE')
 MAILJET_API_URL = 'https://api.mailjet.com/v3.1/send' # Corrected endpoint version
 
-FROM_EMAIL = 'leon44@gmail.com' # Replace with a verified sender email in your MailJet account
-FROM_NAME = 'LoyaltyHI'
+FROM_EMAIL = 'loyalty@hotelsinternational.co.uk' # Replace with a verified sender email in your MailJet account
+FROM_NAME = 'Hotels International'
 
 def send_magic_link(recipient_email, magic_link):
     """Sends a magic link email using MailJet's API."""
