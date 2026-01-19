@@ -16,9 +16,6 @@
                     <li class="nav-item">
                         <span class="navbar-text mr-3">Welcome, {{ session.get('customer_name', 'User') }}</span>
                     </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-secondary" href="{{ url_for('auth.logout') }}">Logout</a>
-                    </li>
                 {% endif %}
             </ul>
         </div>
@@ -35,5 +32,12 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </main>
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            {% if 'user_email' in session %}
+                <a class="btn btn-outline-secondary" href="{{ url_for('auth.logout') }}">Logout</a>
+            {% endif %}
+        </div>
+    </footer>
 </body>
 </html>
