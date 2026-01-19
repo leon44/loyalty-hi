@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Check Your Inbox{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Check Your Inbox</h2>
+                    <p class="lead">We've sent a magic link to your email address. Click the link to sign in.</p>
+                    <p class="text-muted">The link will expire in 15 minutes.</p>
+                    <hr>
+                    <p>Didn't receive an email? Check your spam folder or <a href="{{ url_for('auth.login') }}">try again</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
