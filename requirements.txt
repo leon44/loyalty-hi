@@ -9,3 +9,4 @@ requests==2.31.0
 pytest==8.0.0
 py-pkpass==1.0.2
 python-barcode==0.15.1
+qrcode[pil]==7.4.2
