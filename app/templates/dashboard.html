@@ -57,7 +57,7 @@
         </div>
     {% else %}
         <!-- Summary View -->
-        <div class="col-md-6">
+        <div class="col-12 col-md-6 order-md-1">
             <div class="card mb-4">
                 <div class="card-body text-center">
                     <h5 class="card-title">Points Balance</h5>
@@ -66,7 +66,32 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+
+        {% if qr_code_data %}
+        <div class="col-12 col-md-6 order-md-3">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Your Loyalty QR Code</h5>
+                    <img src="{{ qr_code_data }}" alt="Loyalty Card QR Code" class="img-fluid">
+                    <p class="text-muted mt-2"><small>{{ customer.CardNumber }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if barcode_data %}
+        <div class="col-12 col-md-6 order-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Your Customer ID Barcode</h5>
+                    <img src="{{ barcode_data }}" alt="Customer ID Barcode" class="img-fluid" style="max-height: 100px;">
+                    <p class="text-muted mt-2"><small>{{ numerical_customer_id }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="col-12 col-md-6 order-md-2">
              <div class="card mb-4">
                 <div class="card-body text-center">
                     <h5 class="card-title">Loyalty Pass</h5>
