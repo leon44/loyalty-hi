@@ -7,8 +7,8 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title text-center">Sign In or Sign Up</h2>
-                    <p class="text-center text-muted">Enter your email to receive a secure magic link to access your account.</p>
+                    <h2 class="card-title text-center">Start collecting points</h2>
+                    <p class="text-center text-muted">Enter your email to receive a secure magic link to access your account or to set up a new account if you don't have one yet.</p>
                     <form method="POST" action="{{ url_for('auth.login') }}">
                         {{ form.hidden_tag() }} {# CSRF token #}
                         <div class="form-group">
