@@ -1,12 +1,161 @@
+/* Black & Gold Gift-Card Aesthetic */
+
+:root {
+    --charcoal-primary: #1a1a1a; /* Deep charcoal, near-black */
+    --charcoal-secondary: #2c2c2c; /* Lighter charcoal for surfaces */
+    --gold-primary: #bda06d;      /* Muted antique gold */
+    --gold-secondary: #8c7a51;    /* Darker brushed gold/bronze */
+    --off-white: #f5f5f5;         /* Off-white for text */
+    --light-grey: #cccccc;       /* Secondary text color */
+}
+
 body {
-    background-color: #f8f9fa;
+    background: var(--charcoal-primary);
+    color: var(--off-white);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6, .display-4 {
+    color: var(--off-white);
+    font-weight: 300; /* Lighter font weight for elegance */
+}
+
+h1, .display-4 {
+    font-weight: 400;
+    color: var(--gold-primary);
+}
+
+/* Cards and Panels */
 .card {
-    border: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    background-color: var(--charcoal-secondary);
+    border: 1px solid rgba(189, 160, 109, 0.2); /* Subtle gold border */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
 }
 
-.display-4 {
-    font-weight: 300;
+.card-header, .card-footer {
+    background-color: var(--charcoal-secondary);
+    border-bottom: 1px solid rgba(189, 160, 109, 0.2);
+}
+
+.card-footer {
+    border-top: 1px solid rgba(189, 160, 109, 0.2);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--gold-primary);
+    border-color: var(--gold-primary);
+    color: var(--charcoal-primary);
+    font-weight: bold;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--gold-secondary);
+    border-color: var(--gold-secondary);
+    box-shadow: 0 0 15px rgba(189, 160, 109, 0.5); /* Soft gold glow */
+}
+
+.btn-primary:active, .btn-primary:focus {
+    background-color: #a38a5a !important; /* Darken on click */
+    border-color: #a38a5a !important;
+    box-shadow: none !important;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--gold-primary);
+    color: var(--gold-primary);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(189, 160, 109, 0.1);
+    color: var(--gold-primary);
+}
+
+/* Forms */
+.form-control {
+    background-color: var(--charcoal-secondary);
+    color: var(--off-white);
+    border: 1px solid rgba(189, 160, 109, 0.3);
+}
+
+.form-control:focus {
+    background-color: var(--charcoal-secondary);
+    color: var(--off-white);
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 8px rgba(189, 160, 109, 0.4); /* Gold focus ring */
+}
+
+.form-control::placeholder {
+    color: var(--light-grey);
+    opacity: 0.7;
+}
+
+/* Links */
+a {
+    color: var(--gold-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--gold-secondary);
+    text-decoration: underline;
+}
+
+/* Flash Messages / Alerts */
+.alert {
+    border-radius: 8px;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.alert-success {
+    background-color: rgba(44, 60, 44, 0.8);
+    color: #c8e6c9;
+    border-color: #4CAF50;
+}
+
+.alert-danger {
+    background-color: rgba(76, 46, 46, 0.8);
+    color: #ffcdd2;
+    border-color: #f44336;
+}
+
+.alert-warning {
+    background-color: rgba(85, 68, 36, 0.8);
+    color: #ffecb3;
+    border-color: #FFC107;
+}
+
+/* Navigation and Footer */
+.navbar.bg-light {
+    background-color: var(--charcoal-secondary) !important;
+    border-bottom: 1px solid rgba(189, 160, 109, 0.2);
+}
+
+.navbar-brand, .navbar-text {
+    color: var(--off-white) !important;
+}
+
+.navbar-brand:hover {
+    color: var(--gold-primary) !important;
+}
+
+.footer.bg-light {
+    background-color: var(--charcoal-secondary) !important;
+    border-top: 1px solid rgba(189, 160, 109, 0.2);
+    color: var(--light-grey);
+}
+
+/* Dividers */
+hr {
+    border-top: 1px solid rgba(189, 160, 109, 0.2);
 }

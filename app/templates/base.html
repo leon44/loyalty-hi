@@ -9,7 +9,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{{ url_for('main.dashboard') if 'user_email' in session else url_for('auth.login') }}">Customer Portal</a>
+        <a class="navbar-brand" href="{{ url_for('main.dashboard') if 'user_email' in session else url_for('auth.login') }}">Hotels International Loyalty</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ml-auto">
                 {% if 'user_email' in session %}
