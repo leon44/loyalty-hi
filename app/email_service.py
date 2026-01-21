@@ -13,8 +13,14 @@ MJ_APIKEY_PRIVATE = os.environ.get('MJ_APIKEY_PRIVATE')
 FROM_EMAIL = 'loyalty@hotelsinternational.co.uk'
 FROM_NAME = 'Hotels International'
 
+from flask import current_app
+
 def send_magic_link(recipient_email, magic_link):
     """Sends a magic link email using MailJet's SMTP server."""
+    if current_app.debug:
+        logging.info(f'Magic link for {recipient_email}: {magic_link}')
+        return True
+
     if not MJ_APIKEY_PUBLIC or not MJ_APIKEY_PRIVATE:
         logging.error('MailJet API keys not configured. Cannot send email.')
         return False
