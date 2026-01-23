@@ -27,13 +27,13 @@ def send_magic_link(recipient_email, magic_link):
 
     # Create the email message
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = 'Your Magic Link to Log In'
+    msg['Subject'] = 'Loyalty Login Link'
     msg['From'] = f'{FROM_NAME} <{FROM_EMAIL}>'
     msg['To'] = recipient_email
 
     # Create the plain-text and HTML version of your message
     text = f'Here is your magic link to log in: {magic_link}'
-    html = f'<h3>Your Magic Link</h3><p>Click the link below to log in:</p><p><a href="{magic_link}">{magic_link}</a></p>'
+    html = f'<h3>Your Magic Login Link</h3><p>Click the link below to log in to your Hotels International Loyalty account:</p><p><a href="{magic_link}">{magic_link}</a></p>'
 
     # Turn these into plain/html MIMEText objects
     part1 = MIMEText(text, 'plain')

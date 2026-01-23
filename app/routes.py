@@ -5,8 +5,7 @@ from wtforms.validators import DataRequired, Optional
 import qrcode
 import io
 import base64
-import barcode
-from barcode.writer import ImageWriter
+import datetime
 
 from app.epos_client import EposNowClient
 
@@ -35,6 +34,7 @@ def dashboard():
     epos_client = EposNowClient()
     customer = epos_client.get_customer_by_email(session['user_email'])
     customer_id = customer.get('Id') if customer else None
+
 
     form_data = {}
     if customer:
@@ -88,7 +88,11 @@ def dashboard():
     # Show the edit form only if 'edit=true' is in the URL, or if it's a new customer.
     show_edit_form = request.args.get('edit') == 'true' or not customer
 
-    points_balance = customer.get('CurrentPoints', 0) if customer else 0
+    points_raw = customer.get('CurrentPoints', 0) if customer else 0
+    points_balance = f"£{points_raw / 100:.2f}"
+    last_updated = None
+    if customer:
+        last_updated = datetime.datetime.now().strftime('%d %b %Y, %H:%M')
 
     qr_code_data = None
     if customer and customer.get('CardNumber'):
@@ -110,26 +114,11 @@ def dashboard():
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         qr_code_data = f'data:image/png;base64,{img_base64}'
 
-    barcode_data = None
-    numerical_customer_id = None
-    if customer and customer.get('CardNumber'): 
-        numerical_customer_id = str(customer.get('CardNumber')).replace('CUS', '')
-        if numerical_customer_id.isdigit():
-            code128 = barcode.get_barcode_class('code128')
-            barcode_image = code128(numerical_customer_id, writer=ImageWriter())
-            
-            barcode_buffer = io.BytesIO()
-            barcode_image.write(barcode_buffer, options={'module_height': 10.0})
-            barcode_buffer.seek(0)
-            
-            barcode_base64 = base64.b64encode(barcode_buffer.read()).decode('utf-8')
-            barcode_data = f'data:image/png;base64,{barcode_base64}'
 
     return render_template('dashboard.html', 
                            customer=customer, 
                            form=form, 
-                           points_balance=points_balance, 
+                           points_balance=points_balance,
+                           last_updated=last_updated,
                            show_edit_form=show_edit_form, 
-                           qr_code_data=qr_code_data,
-                           barcode_data=barcode_data,
-                           numerical_customer_id=numerical_customer_id)
+                           qr_code_data=qr_code_data)
