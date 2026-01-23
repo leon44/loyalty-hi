@@ -141,6 +141,10 @@ a:hover {
     border-bottom: 1px solid rgba(189, 160, 109, 0.2);
 }
 
+.navbar-logo {
+    height: 40px; /* Adjust as needed */
+}
+
 .navbar-brand, .navbar-text {
     color: var(--off-white) !important;
 }
@@ -158,4 +162,9 @@ a:hover {
 /* Dividers */
 hr {
     border-top: 1px solid rgba(189, 160, 109, 0.2);
+}
+
+/* QR Code */
+.qr-code {
+    border-radius: 12px;
 }

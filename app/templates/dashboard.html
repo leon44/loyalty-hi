@@ -60,41 +60,32 @@
         <div class="col-12 col-md-6 order-md-1">
             <div class="card mb-4">
                 <div class="card-body text-center">
-                    <h5 class="card-title">Points Balance</h5>
+                    <h5 class="card-title">Loyalty Balance</h5>
                     <p class="display-4">{{ points_balance }}</p>
-                    <small class="text-muted"></small>
+                    {% if last_updated %}
+                        <p class="text-muted mt-2"><small>Last updated: {{ last_updated }}</small></p>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
         {% if qr_code_data %}
-        <div class="col-12 col-md-6 order-md-3">
+        <div class="col-12 col-md-6 order-md-2">
             <div class="card mb-4">
                 <div class="card-body text-center">
-                    <h5 class="card-title">Your Loyalty QR Code</h5>
-                    <img src="{{ qr_code_data }}" alt="Loyalty Card QR Code" class="img-fluid">
+                    <h5 class="card-title">QR Code</h5>
+                    <img src="{{ qr_code_data }}" alt="Loyalty Card QR Code" class="img-fluid qr-code">
                     <p class="text-muted mt-2"><small>{{ customer.CardNumber }}</small></p>
                 </div>
             </div>
         </div>
         {% endif %}
 
-        {% if barcode_data %}
-        <div class="col-12 col-md-6 order-md-4">
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Your Customer ID Barcode</h5>
-                    <img src="{{ barcode_data }}" alt="Customer ID Barcode" class="img-fluid" style="max-height: 100px;">
-                    <p class="text-muted mt-2"><small>{{ numerical_customer_id }}</small></p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
 
-        <div class="col-12 col-md-6 order-md-2">
+        <div class="col-12 col-md-6 order-md-3">
              <div class="card mb-4">
                 <div class="card-body text-center">
-                    <h5 class="card-title">Loyalty Pass</h5>
+                    <h5 class="card-title">Wallet Pass</h5>
                     <p>Add your loyalty card to your phone's digital wallet for easy access.</p>
                     <a href="{{ url_for('wallet.generate_pass') }}" class="btn btn-dark">
                         Add to Apple Wallet

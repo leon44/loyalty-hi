@@ -30,6 +30,8 @@ class EposNowClient:
         try:
             response = requests.request(method, url, headers=headers, **kwargs)
             response.raise_for_status()
+            if response.status_code == 204 or not response.content:
+                return None
             return response.json()
         except requests.exceptions.HTTPError as e:
             logging.error(f'HTTP error calling EPOS Now API: {e.response.status_code} {e.response.text}')
@@ -47,6 +49,7 @@ class EposNowClient:
             if not customers:
                 return None
             if isinstance(customers, list):
+                print(customers[0])
                 return customers[0] if customers else None
             return customers
         except requests.exceptions.HTTPError as e:
@@ -84,4 +87,5 @@ class EposNowClient:
         except Exception as e:
             logging.error(f'Failed to create customer: {e}')
             raise
+
 
