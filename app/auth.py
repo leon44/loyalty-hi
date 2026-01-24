@@ -121,6 +121,7 @@ def verify_link(token):
     try:
         epos_client = EposNowClient()
         customer = epos_client.get_customer_by_email(magic_token.email)
+        print(customer)
         if customer:
             session['customer_id'] = customer.get('Id')
             session['customer_name'] = f"{customer.get('Forename', '')} {customer.get('Surname', '')}".strip()
