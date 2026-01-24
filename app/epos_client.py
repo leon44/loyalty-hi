@@ -27,9 +27,12 @@ class EposNowClient:
             'Content-Type': 'application/json'
         }
         url = f'{self.base_url}/{endpoint}'
+        print(url)
         try:
             response = requests.request(method, url, headers=headers, **kwargs)
+            print(response.text)
             response.raise_for_status()
+            print(response.text)
             if response.status_code == 204 or not response.content:
                 return None
             return response.json()
@@ -42,14 +45,18 @@ class EposNowClient:
 
     def get_customer_by_email(self, email):
         """Fetches a customer by their email address."""
-        endpoint = f'Customer/GetByEmail?email={email}'
+        endpoint = 'Customer/GetByEmail'
         try:
             # The API might return a list or a single object. Let's assume a list.
-            customers = self._make_request('GET', endpoint)
+            customers = self._make_request(
+                'GET',
+                endpoint,
+                params={'email': email}   # 👈 THIS is the key change
+            )
+
             if not customers:
                 return None
             if isinstance(customers, list):
-                print(customers[0])
                 return customers[0] if customers else None
             return customers
         except requests.exceptions.HTTPError as e:
