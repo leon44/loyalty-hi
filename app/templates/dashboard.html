@@ -94,8 +94,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 text-center">
+        <div class="col-12 text-center mt-4 order-md-4">
             <a href="{{ url_for('main.dashboard', edit='true') }}">Edit my Profile</a>
+        </div>
+        <div class="col-12 text-center mt-3 order-md-5">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm">Logout</a>
         </div>
     {% endif %}
 </div>

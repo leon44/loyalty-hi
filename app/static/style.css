@@ -153,12 +153,6 @@ a:hover {
     color: var(--gold-primary) !important;
 }
 
-.footer.bg-light {
-    background-color: var(--charcoal-secondary) !important;
-    border-top: 1px solid rgba(189, 160, 109, 0.2);
-    color: var(--light-grey);
-}
-
 /* Dividers */
 hr {
     border-top: 1px solid rgba(189, 160, 109, 0.2);

@@ -27,12 +27,9 @@ class EposNowClient:
             'Content-Type': 'application/json'
         }
         url = f'{self.base_url}/{endpoint}'
-        print(url)
         try:
             response = requests.request(method, url, headers=headers, **kwargs)
-            print(response.text)
             response.raise_for_status()
-            print(response.text)
             if response.status_code == 204 or not response.content:
                 return None
             return response.json()
