@@ -34,12 +34,5 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </main>
-    <footer class="footer mt-auto py-3 bg-light">
-        <div class="container text-center">
-            {% if 'user_email' in session %}
-                <a class="btn btn-outline-secondary" href="{{ url_for('auth.logout') }}">Logout</a>
-            {% endif %}
-        </div>
-    </footer>
 </body>
 </html>
