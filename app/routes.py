@@ -22,6 +22,10 @@ class ProfileForm(FlaskForm):
 
 @bp.before_request
 def require_login():
+    # Allow public access to apple-app-site-association for iOS deep linking
+    if request.endpoint == 'main.apple_app_site_association':
+        return None
+    
     if 'user_email' not in session and request.endpoint != 'static':
         if request.blueprint != 'auth':
             return redirect(url_for('auth.login'))
