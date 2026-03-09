@@ -84,17 +84,23 @@ def generate_pass():
     # Create store card with customer information
     card = StoreCard()
     
-    # Secondary field: Customer name (smaller, no label)
+    # Secondary fields: Customer name and ID
     customer_name = f"{customer.get('Forename', '')} {customer.get('Surname', '')}".strip()
     if customer_name:
-        card.addSecondaryField('name', customer_name, '')  # Empty label
+        card.addSecondaryField('name', customer_name, 'Name')
+    
+    # Customer ID to the right of name
+    card.addSecondaryField('customer_id', customer['CardNumber'], 'ID')
+    
+    # Auxiliary field: Add spacing below QR code
+    card.addAuxiliaryField('spacer', ' ', ' ')  # Empty field for spacing
     
     # Back field: Link to check balance online
     card.addBackField('website', 'https://loyalty.hotelsinternational.co.uk', 'Check Your Balance')
 
     # QR code barcode (modern standard)
-    barcode_data = customer['CardNumber']
-    barcode = Barcode(message=barcode_data, format=BarcodeFormat.QR)
+    barcode_data = str(customer['CardNumber'])  # Ensure it's a string
+    barcode = Barcode(message=barcode_data, format=BarcodeFormat.QR, messageEncoding='utf-8')
     
     # Create pass with colors (black and gold theme)
     pass_obj = Pass(
@@ -128,6 +134,15 @@ def generate_pass():
                 pass_obj.addFile(asset, f)
         else:
             logging.warning(f'Pass asset not found: {asset_path}')
+    
+    # Add strip image (hero image) if available
+    strip_image_path = os.path.join(assets_dir, 'LDU278-BetweenaRockandaGrottoMarsdenBay.jpg')
+    if os.path.exists(strip_image_path):
+        with open(strip_image_path, 'rb') as f:
+            pass_obj.addFile('strip.png', f)  # Apple Wallet expects strip.png
+        logging.info('Added strip image to pass')
+    else:
+        logging.warning(f'Strip image not found: {strip_image_path}')
 
     # Sign and create the pass
     try:
