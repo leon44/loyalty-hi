@@ -1,0 +1,9 @@
+{
+     "applinks": {
+       "apps": [],
+       "details": [{
+         "appID": "G7RUUN4QC4.co.uk.hotelsinternational.LoyaltyApp",
+         "paths": ["/auth/verify*"]
+       }]
+     }
+   }
