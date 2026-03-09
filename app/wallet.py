@@ -111,7 +111,7 @@ def generate_pass():
     )
     
     # Set pass properties
-    pass_obj.logoText = 'Hotels International'
+    pass_obj.logoText = ''
     pass_obj.description = 'Loyalty Card'
     pass_obj.backgroundColor = 'rgb(26, 26, 26)'  # Deep charcoal
     pass_obj.foregroundColor = 'rgb(245, 245, 245)'  # Off-white
