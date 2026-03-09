@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, flash, request
+from flask import Blueprint, render_template, session, redirect, url_for, flash, request, send_from_directory
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Optional
@@ -6,6 +6,7 @@ import qrcode
 import io
 import base64
 import datetime
+import os
 
 from app.epos_client import EposNowClient
 
@@ -122,3 +123,11 @@ def dashboard():
                            last_updated=last_updated,
                            show_edit_form=show_edit_form, 
                            qr_code_data=qr_code_data)
+
+@bp.route('/.well-known/apple-app-site-association')
+def apple_app_site_association():
+    """Serve the Apple App Site Association file for deep linking."""
+    static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'static')
+    return send_from_directory(os.path.join(static_dir, '.well-known'), 
+                                'apple-app-site-association',
+                                mimetype='application/json')
