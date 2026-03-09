@@ -2,7 +2,7 @@
      "applinks": {
        "apps": [],
        "details": [{
-         "appID": "G7RUUN4QC4.co.uk.hotelsinternational.LoyaltyApp",
+         "appID": "G7RUUN4QC4.hotelsinternational.LoyaltyApp",
          "paths": ["*"]
        }]
      }
