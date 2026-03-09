@@ -9,3 +9,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     EPOS_API_KEY = os.environ.get('EPOS_API_KEY')
     EPOS_API_SECRET = os.environ.get('EPOS_API_SECRET')
+    
+    # Apple Wallet Pass Configuration
+    APPLE_TEAM_ID = os.environ.get('APPLE_TEAM_ID')
+    PASS_TYPE_ID = os.environ.get('PASS_TYPE_ID')
+    PASS_CERT_PASSWORD = os.environ.get('PASS_CERT_PASSWORD', '')

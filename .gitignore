@@ -19,3 +19,9 @@ __pycache__/
 
 # Virtual environment
 .venv/
+
+# Apple Wallet Pass certificates (sensitive!)
+app/certificates/*.pem
+app/certificates/*.p12
+app/certificates/*.cer
+app/certificates/*.key
