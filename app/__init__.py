@@ -25,6 +25,9 @@ def create_app(config_class=Config):
     from app.wallet import bp as wallet_bp
     app.register_blueprint(wallet_bp)
 
+    from app.google_wallet import bp as google_wallet_bp
+    app.register_blueprint(google_wallet_bp)
+
     with app.app_context():
         db.create_all()
 

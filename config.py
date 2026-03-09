@@ -14,3 +14,7 @@ class Config:
     APPLE_TEAM_ID = os.environ.get('APPLE_TEAM_ID')
     PASS_TYPE_ID = os.environ.get('PASS_TYPE_ID')
     PASS_CERT_PASSWORD = os.environ.get('PASS_CERT_PASSWORD', '')
+    
+    # Google Wallet Pass Configuration
+    GOOGLE_WALLET_ISSUER_ID = os.environ.get('GOOGLE_WALLET_ISSUER_ID')
+    GOOGLE_WALLET_CLASS_ID = os.environ.get('GOOGLE_WALLET_CLASS_ID')

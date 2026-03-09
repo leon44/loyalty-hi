@@ -25,3 +25,7 @@ app/certificates/*.pem
 app/certificates/*.p12
 app/certificates/*.cer
 app/certificates/*.key
+
+# Google Wallet service account credentials (sensitive!)
+app/*.json
+*.json
