@@ -84,18 +84,13 @@ def generate_pass():
     # Create store card with customer information
     card = StoreCard()
     
-    # Primary field: Customer name
+    # Secondary field: Customer name (smaller, no label)
     customer_name = f"{customer.get('Forename', '')} {customer.get('Surname', '')}".strip()
     if customer_name:
-        card.addPrimaryField('name', customer_name, 'Member')
+        card.addSecondaryField('name', customer_name, '')  # Empty label
     
-    # Secondary fields: Points balance
-    points_raw = customer.get('CurrentPoints', 0)
-    points_balance = f"£{points_raw / 100:.2f}"
-    card.addSecondaryField('balance', points_balance, 'Balance')
-    
-    # Auxiliary field: Card number
-    card.addAuxiliaryField('card', customer['CardNumber'], 'Card Number')
+    # Back field: Link to check balance online
+    card.addBackField('website', 'https://loyalty.hotelsinternational.co.uk', 'Check Your Balance')
 
     # QR code barcode (modern standard)
     barcode_data = customer['CardNumber']
