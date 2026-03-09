@@ -29,3 +29,5 @@ app/certificates/*.key
 # Google Wallet service account credentials (sensitive!)
 app/*.json
 *.json
+# But allow the Apple App Site Association file
+!app/static/.well-known/apple-app-site-association
