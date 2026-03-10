@@ -61,14 +61,14 @@ func application(_ app: UIApplication, open url: URL, options: [UIApplication.Op
     guard url.scheme == "loyaltyapp" else { return false }
     
     // Parse the URL
-    // Format: loyaltyapp://auth/verify?token=YOUR_TOKEN
+    // Format: loyaltyapp://open?url=https://loyalty.hotelsinternational.co.uk/login/verify/TOKEN
     
-    if url.host == "auth" && url.path == "/verify" {
+    if url.host == "open" {
         if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-           let token = components.queryItems?.first(where: { $0.name == "token" })?.value {
+           let urlString = components.queryItems?.first(where: { $0.name == "url" })?.value,
+           let verifyURL = URL(string: urlString) {
             
             // Navigate to verification URL in webview
-            let verifyURL = URL(string: "https://loyalty.hotelsinternational.co.uk/login/verify/\(token)")!
             webView.load(URLRequest(url: verifyURL))
             
             return true
@@ -98,13 +98,13 @@ struct LoyaltyApp: App {
     func handleCustomURL(_ url: URL) {
         guard url.scheme == "loyaltyapp" else { return }
         
-        if url.host == "auth" && url.path == "/verify" {
+        if url.host == "open" {
             if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-               let token = components.queryItems?.first(where: { $0.name == "token" })?.value {
+               let urlString = components.queryItems?.first(where: { $0.name == "url" })?.value,
+               let verifyURL = URL(string: urlString) {
                 
-                // Navigate to verification URL
-                let verifyURL = URL(string: "https://loyalty.hotelsinternational.co.uk/login/verify/\(token)")!
-                // Load in your webview
+                // Navigate to verification URL in your webview
+                // Load verifyURL in your webview
             }
         }
     }
@@ -115,8 +115,10 @@ struct LoyaltyApp: App {
 
 **In-App Magic Link:**
 ```
-loyaltyapp://auth/verify?token=MAGIC_TOKEN_HERE
+loyaltyapp://open?url=https://loyalty.hotelsinternational.co.uk/login/verify/MAGIC_TOKEN_HERE
 ```
+
+The custom URL scheme includes the full verification URL as a parameter, making it easy for your app to know exactly where to navigate the webview.
 
 **Web Magic Link (fallback):**
 ```

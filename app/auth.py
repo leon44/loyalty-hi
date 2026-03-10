@@ -102,8 +102,10 @@ def login():
         
         if is_in_app:
             # Use custom URL scheme for in-app webview
-            magic_link_url = f"loyaltyapp://auth/verify?token={token}"
-            logging.info(f'Generated in-app magic link for {email}')
+            # Include full verification URL so app knows where to navigate
+            verify_url = url_for('auth.verify_link', token=token, _external=True)
+            magic_link_url = f"loyaltyapp://open?url={verify_url}"
+            logging.info(f'Generated in-app magic link for {email}: {magic_link_url}')
         else:
             # Use standard HTTPS URL for web browsers
             magic_link_url = url_for('auth.verify_link', token=token, _external=True)

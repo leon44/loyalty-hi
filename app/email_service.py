@@ -33,7 +33,16 @@ def send_magic_link(recipient_email, magic_link):
 
     # Create the plain-text and HTML version of your message
     text = f'Here is your magic link to log in: {magic_link}'
-    html = f'<h3>Your Magic Login Link</h3><p>Click the link below to log in to your Hotels International Loyalty account:</p><p><a href="{magic_link}">{magic_link}</a></p>'
+    html = f'''
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h3 style="color: #333;">Your Magic Login Link</h3>
+        <p style="color: #666;">Click the button below to log in to your Hotels International Loyalty account:</p>
+        <p style="margin: 30px 0;">
+            <a href="{magic_link}" style="display: inline-block; padding: 12px 24px; background-color: #1a1a1a; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">Log In to Your Account</a>
+        </p>
+        <p style="color: #999; font-size: 12px;">Or copy and paste this link: <a href="{magic_link}" style="color: #1a1a1a;">{magic_link}</a></p>
+    </div>
+    '''
 
     # Turn these into plain/html MIMEText objects
     part1 = MIMEText(text, 'plain')
