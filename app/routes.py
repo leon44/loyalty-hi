@@ -26,6 +26,10 @@ def require_login():
     if request.endpoint == 'main.apple_app_site_association':
         return None
     
+    # Allow public access to app-redirect for magic link redirects
+    if request.endpoint == 'main.app_redirect':
+        return None
+    
     if 'user_email' not in session and request.endpoint != 'static':
         if request.blueprint != 'auth':
             return redirect(url_for('auth.login'))
@@ -135,3 +139,71 @@ def apple_app_site_association():
     return send_from_directory(os.path.join(static_dir, '.well-known'), 
                                 'apple-app-site-association',
                                 mimetype='application/json')
+
+@bp.route('/app-redirect')
+def app_redirect():
+    """Redirect page that launches the app via custom URL scheme."""
+    target_url = request.args.get('url', '')
+    
+    if not target_url:
+        flash('Invalid redirect link.', 'danger')
+        return redirect(url_for('auth.login'))
+    
+    # Return HTML page with JavaScript redirect to custom URL scheme
+    return f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Opening Loyalty App...</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f5f5f5;
+            }}
+            .container {{
+                text-align: center;
+                padding: 20px;
+            }}
+            .spinner {{
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #1a1a1a;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 20px auto;
+            }}
+            @keyframes spin {{
+                0% {{ transform: rotate(0deg); }}
+                100% {{ transform: rotate(360deg); }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="spinner"></div>
+            <h2>Opening Loyalty App...</h2>
+            <p>If the app doesn't open, <a href="{target_url}">click here</a> to continue in your browser.</p>
+        </div>
+        <script>
+            const targetUrl = new URLSearchParams(window.location.search).get('url');
+            if (targetUrl) {{
+                // Attempt to open the app with custom URL scheme
+                window.location.href = 'loyaltyapp://open?url=' + encodeURIComponent(targetUrl);
+                
+                // Fallback to web URL after a short delay if app doesn't open
+                setTimeout(function() {{
+                    window.location.href = targetUrl;
+                }}, 2000);
+            }}
+        </script>
+    </body>
+    </html>
+    '''

@@ -91,21 +91,17 @@ def login():
         logging.info(f'Magic link request - User-Agent: {user_agent}')
         logging.info(f'Magic link request - X-Requested-With: {x_requested_with}')
         
-        # Detect iOS webview: has Mobile/15E148 but NOT Safari or Version
-        # Webview: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
+        # Detect iOS webview by custom User-Agent
+        # Webview: "LoyaltyApp/1.0 (iOS; Hotels International)"
         # Safari:  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.4 Mobile/15E148 Safari/604.1"
-        is_ios_webview = ('mobile/' in user_agent_lower and 
-                          'safari' not in user_agent_lower and 
-                          'version' not in user_agent_lower)
-        
-        is_in_app = is_ios_webview or 'loyaltyapp' in user_agent_lower or x_requested_with == 'LoyaltyApp'
+        is_in_app = 'loyaltyapp' in user_agent_lower or x_requested_with == 'LoyaltyApp'
         
         if is_in_app:
-            # Use custom URL scheme for in-app webview
-            # Include full verification URL so app knows where to navigate
+            # Use HTTPS redirect page for in-app webview
+            # This ensures Gmail recognizes the link as clickable
             verify_url = url_for('auth.verify_link', token=token, _external=True)
-            magic_link_url = f"loyaltyapp://open?url={verify_url}"
-            logging.info(f'Generated in-app magic link for {email}: {magic_link_url}')
+            magic_link_url = url_for('main.app_redirect', url=verify_url, _external=True)
+            logging.info(f'Generated in-app redirect link for {email}: {magic_link_url}')
         else:
             # Use standard HTTPS URL for web browsers
             magic_link_url = url_for('auth.verify_link', token=token, _external=True)
