@@ -82,9 +82,23 @@ def login():
         db.session.commit()
 
         # Generate magic link URL
-        # Check if request is from in-app webview (custom User-Agent)
-        user_agent = request.user_agent.string.lower()
-        is_in_app = 'loyaltyapp' in user_agent or request.headers.get('X-Requested-With') == 'LoyaltyApp'
+        # Check if request is from in-app webview
+        user_agent = request.user_agent.string
+        user_agent_lower = user_agent.lower()
+        x_requested_with = request.headers.get('X-Requested-With', '')
+        
+        # Log for debugging
+        logging.info(f'Magic link request - User-Agent: {user_agent}')
+        logging.info(f'Magic link request - X-Requested-With: {x_requested_with}')
+        
+        # Detect iOS webview: has Mobile/15E148 but NOT Safari or Version
+        # Webview: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
+        # Safari:  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.4 Mobile/15E148 Safari/604.1"
+        is_ios_webview = ('mobile/' in user_agent_lower and 
+                          'safari' not in user_agent_lower and 
+                          'version' not in user_agent_lower)
+        
+        is_in_app = is_ios_webview or 'loyaltyapp' in user_agent_lower or x_requested_with == 'LoyaltyApp'
         
         if is_in_app:
             # Use custom URL scheme for in-app webview
@@ -93,6 +107,7 @@ def login():
         else:
             # Use standard HTTPS URL for web browsers
             magic_link_url = url_for('auth.verify_link', token=token, _external=True)
+            logging.info(f'Generated web magic link for {email}')
         
         # Send email with magic link via MailJet
         send_magic_link(email, magic_link_url)
