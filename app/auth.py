@@ -81,8 +81,18 @@ def login():
         db.session.add(new_token)
         db.session.commit()
 
-        # Send email with magic link
-        magic_link_url = url_for('auth.verify_link', token=token, _external=True)
+        # Generate magic link URL
+        # Check if request is from in-app webview (custom User-Agent)
+        user_agent = request.user_agent.string.lower()
+        is_in_app = 'loyaltyapp' in user_agent or request.headers.get('X-Requested-With') == 'LoyaltyApp'
+        
+        if is_in_app:
+            # Use custom URL scheme for in-app webview
+            magic_link_url = f"loyaltyapp://auth/verify?token={token}"
+            logging.info(f'Generated in-app magic link for {email}')
+        else:
+            # Use standard HTTPS URL for web browsers
+            magic_link_url = url_for('auth.verify_link', token=token, _external=True)
         
         # Send email with magic link via MailJet
         send_magic_link(email, magic_link_url)
