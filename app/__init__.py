@@ -34,15 +34,15 @@ def create_app(config_class=Config):
         from flask import request
         import logging
         
-        # Get user agent
-        user_agent_string = request.user_agent.string if request.user_agent else ''
+        # Get user agent from headers directly (works better with proxies/load balancers)
+        user_agent_string = request.headers.get('User-Agent', '')
         user_agent_lower = user_agent_string.lower()
         
         # Check for in-app
         is_in_app = 'loyaltyapp' in user_agent_lower
         
         # Log every request to debug
-        logging.info(f'Context processor called - Path: {request.path}, User-Agent: {user_agent_string}, is_in_app: {is_in_app}')
+        logging.info(f'Context processor - Path: {request.path}, User-Agent: {user_agent_string}, is_in_app: {is_in_app}')
         
         return dict(is_in_app=is_in_app)
 
