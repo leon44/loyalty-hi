@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    {% if not is_in_app %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="{{ url_for('main.dashboard') if 'user_email' in session else url_for('auth.login') }}">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Hotels International Logo" class="navbar-logo">
@@ -22,6 +23,7 @@
             </ul>
         </div>
     </nav>
+    {% endif %}
     <main class="container mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

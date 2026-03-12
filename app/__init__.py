@@ -28,6 +28,14 @@ def create_app(config_class=Config):
     from app.google_wallet import bp as google_wallet_bp
     app.register_blueprint(google_wallet_bp)
 
+    # Context processor to detect in-app webview
+    @app.context_processor
+    def inject_is_in_app():
+        from flask import request
+        user_agent = request.user_agent.string.lower() if request.user_agent else ''
+        is_in_app = 'loyaltyapp' in user_agent
+        return dict(is_in_app=is_in_app)
+
     with app.app_context():
         db.create_all()
 
