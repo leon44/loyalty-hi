@@ -33,10 +33,17 @@ def create_app(config_class=Config):
     def inject_is_in_app():
         from flask import request
         import logging
-        user_agent = request.user_agent.string.lower() if request.user_agent else ''
-        is_in_app = 'loyaltyapp' in user_agent
-        if is_in_app:
-            logging.info(f'IN-APP DETECTED: User-Agent contains "loyaltyapp" - hiding header')
+        
+        # Get user agent
+        user_agent_string = request.user_agent.string if request.user_agent else ''
+        user_agent_lower = user_agent_string.lower()
+        
+        # Check for in-app
+        is_in_app = 'loyaltyapp' in user_agent_lower
+        
+        # Log every request to debug
+        logging.info(f'Context processor called - Path: {request.path}, User-Agent: {user_agent_string}, is_in_app: {is_in_app}')
+        
         return dict(is_in_app=is_in_app)
 
     with app.app_context():
