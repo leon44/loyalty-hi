@@ -55,6 +55,21 @@ def login():
         email = form.email.data.lower()
         ip_address = request.remote_addr
 
+        # Backdoor for Apple App Review - bypass magic link
+        if email == 'leon44+appletestaccount@gmail.com':
+            actual_email = 'leon44@gmail.com'
+            session['user_email'] = actual_email
+            
+            # Get customer info for session
+            epos_client = EposNowClient()
+            customer = epos_client.get_customer_by_email(actual_email)
+            if customer:
+                customer_name = f"{customer.get('Forename', '')} {customer.get('Surname', '')}".strip()
+                session['customer_name'] = customer_name if customer_name else 'User'
+            
+            logging.info(f'Apple test account backdoor login: {email} -> {actual_email}')
+            return redirect(url_for('main.dashboard'))
+
         # Rate limiting
         is_dev = current_app.debug
         email_limit = 500 if is_dev else RATE_LIMIT_EMAIL_HOUR
