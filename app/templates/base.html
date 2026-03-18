@@ -13,6 +13,11 @@
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
     
+    <!-- App Store Smart Banner (iOS Safari only, not in-app) -->
+    {% if not is_in_app %}
+    <meta name="apple-itunes-app" content="app-id=6760557044">
+    {% endif %}
+    
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
