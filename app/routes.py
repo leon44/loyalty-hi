@@ -147,8 +147,12 @@ def apple_app_site_association():
 @bp.route('/manifest.json')
 def manifest():
     """Serve the PWA manifest file."""
+    from flask import make_response
     static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'static')
-    return send_from_directory(static_dir, 'manifest.json', mimetype='application/json')
+    response = make_response(send_from_directory(static_dir, 'manifest.json', mimetype='application/json'))
+    # Prevent aggressive caching - allow updates to be picked up quickly
+    response.headers['Cache-Control'] = 'public, max-age=600'  # 10 minutes
+    return response
 
 @bp.route('/service-worker.js')
 def service_worker():

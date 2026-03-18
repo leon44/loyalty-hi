@@ -38,7 +38,7 @@
         </div>
     </nav>
     {% endif %}
-    <main class="container {% if not is_in_app %}mt-4{% endif %}">
+    <main class="container {% if not is_in_app %}mt-4{% endif %}" style="padding-bottom: 100px;">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}

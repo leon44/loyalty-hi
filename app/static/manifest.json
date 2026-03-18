@@ -3,10 +3,14 @@
   "short_name": "HI Loyalty",
   "description": "Hotels International Loyalty Program",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#1a1a1a",
   "orientation": "portrait",
+   "launch_handler": {
+    "client_mode": "navigate-existing"
+   },
   "icons": [
     {
       "src": "/static/images/icon.png",
