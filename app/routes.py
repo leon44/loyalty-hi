@@ -30,6 +30,10 @@ def require_login():
     if request.endpoint == 'main.app_redirect':
         return None
     
+    # Allow public access to PWA files
+    if request.endpoint in ['main.manifest', 'main.service_worker']:
+        return None
+    
     if 'user_email' not in session and request.endpoint != 'static':
         if request.blueprint != 'auth':
             return redirect(url_for('auth.login'))
@@ -139,6 +143,18 @@ def apple_app_site_association():
     return send_from_directory(os.path.join(static_dir, '.well-known'), 
                                 'apple-app-site-association',
                                 mimetype='application/json')
+
+@bp.route('/manifest.json')
+def manifest():
+    """Serve the PWA manifest file."""
+    static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'static')
+    return send_from_directory(static_dir, 'manifest.json', mimetype='application/json')
+
+@bp.route('/service-worker.js')
+def service_worker():
+    """Serve the service worker file."""
+    static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'static')
+    return send_from_directory(static_dir, 'service-worker.js', mimetype='application/javascript')
 
 @bp.route('/app-redirect')
 def app_redirect():
