@@ -31,3 +31,5 @@ app/*.json
 *.json
 # But allow the Apple App Site Association file
 !app/static/.well-known/apple-app-site-association
+# Allow PWA manifest file
+!app/static/manifest.json
