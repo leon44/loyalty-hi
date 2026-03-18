@@ -51,12 +51,14 @@
         {% block content %}{% endblock %}
     </main>
     
-    <!-- PWA Install Button (Android only) -->
+    <!-- PWA Install Button (Android only, logged in users only) -->
+    {% if 'user_email' in session %}
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;">
         <button id="pwa-install-btn" class="btn btn-primary btn-lg">
             📱 Install App
         </button>
     </div>
+    {% endif %}
     
     <script>
         // Register Service Worker
@@ -66,7 +68,8 @@
                 .catch(err => console.log('Service Worker registration failed:', err));
         }
         
-        // PWA Install Prompt (Android only)
+        // PWA Install Prompt (Android only, logged in users only)
+        {% if 'user_email' in session %}
         let deferredPrompt;
         const installContainer = document.getElementById('pwa-install-container');
         const installBtn = document.getElementById('pwa-install-btn');
@@ -110,6 +113,7 @@
             installContainer.style.display = 'none';
             console.log('PWA was installed');
         });
+        {% endif %}
     </script>
 </body>
 </html>
