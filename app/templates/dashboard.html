@@ -82,6 +82,7 @@
         {% endif %}
 
 
+        <!-- WALLET PASS SECTION - HIDDEN TO ENCOURAGE APP USAGE
         <div class="col-12 col-md-6 order-md-3">
              <div class="card mb-4">
                 <div class="card-body text-center">
@@ -93,15 +94,18 @@
                                  alt="Add to Apple Wallet" 
                                  style="height: 40px; cursor: pointer;">
                         </a>
+                        {% if not is_in_app %}
                         <a href="{{ url_for('google_wallet.generate_pass') }}">
                             <img src="{{ url_for('static', filename='images/enGB_add_to_google_wallet_add-wallet-badge.svg') }}" 
                                  alt="Add to Google Wallet" 
                                  style="height: 40px; cursor: pointer;">
                         </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
+        -->
         <div class="col-12 text-center mt-4 order-md-4">
             <a href="{{ url_for('main.dashboard', edit='true') }}">Edit my Profile</a>
         </div>
