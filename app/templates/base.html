@@ -61,6 +61,17 @@
     {% endif %}
     
     <script>
+        // Auto-redirect iOS Chrome users to App Store (but not in-app webview)
+        {% if not is_in_app %}
+        const userAgent = navigator.userAgent;
+        const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+        const isChrome = /CriOS/i.test(userAgent);
+        
+        if (isIOS && isChrome) {
+            window.location.href = "https://apps.apple.com/app/id6760557044";
+        }
+        {% endif %}
+        
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js')
