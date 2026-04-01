@@ -83,7 +83,7 @@ def dashboard():
                     'Surname': form.surname.data,
                     'EmailAddress': session['user_email'],
                     'ContactNumber': form.phone.data,
-                    'Type': 6594, # Customer Type ID
+                    'Type': 861, # Customer Type ID
                     'MarketingConsent': {
                         'Email': form.marketing_email.data,
                         'Text': form.marketing_text.data
@@ -128,13 +128,17 @@ def dashboard():
         qr_code_data = f'data:image/png;base64,{img_base64}'
 
 
+    # Get customer type for badge display
+    customer_type = customer.get('Type') if customer else None
+    
     return render_template('dashboard.html', 
                            customer=customer, 
                            form=form, 
                            points_balance=points_balance,
                            last_updated=last_updated,
                            show_edit_form=show_edit_form, 
-                           qr_code_data=qr_code_data)
+                           qr_code_data=qr_code_data,
+                           customer_type=customer_type)
 
 @bp.route('/.well-known/apple-app-site-association')
 def apple_app_site_association():

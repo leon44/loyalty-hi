@@ -89,6 +89,13 @@
                     <h5 class="card-title">{{ session.get('customer_name', 'User') }}</h5>
                     <img src="{{ qr_code_data }}" alt="Loyalty Card QR Code" class="img-fluid qr-code">
                     <p class="text-muted mt-2"><small>{{ customer.CardNumber }}</small></p>
+                    {% if customer_type == 6594 %}
+                    <div class="mt-3">
+                        <span class="badge" style="background: linear-gradient(135deg, #d4af37 0%, #f9e79f 50%, #d4af37 100%); color: #1a1a1a; font-size: 1rem; padding: 8px 20px; font-weight: 600; letter-spacing: 1px; border: 2px solid #b8941e; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);">
+                            SHAREHOLDER
+                        </span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -53,9 +53,19 @@ class EposNowClient:
 
             if not customers:
                 return None
+            
+            customer = None
             if isinstance(customers, list):
-                return customers[0] if customers else None
-            return customers
+                customer = customers[0] if customers else None
+            else:
+                customer = customers
+            
+            # Log the customer Type field for debugging
+            if customer:
+                customer_type = customer.get('Type', 'N/A')
+                logging.info(f'Customer Type for {email}: {customer_type}')
+            
+            return customer
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
                 return None # Customer not found is not an error in this context
