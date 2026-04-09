@@ -19,7 +19,7 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/static/images/icon2x.png",
+      "src": "/static/images/icon@2x.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

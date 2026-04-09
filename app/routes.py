@@ -26,6 +26,10 @@ def require_login():
     if request.endpoint == 'main.apple_app_site_association':
         return None
     
+    # Allow public access to assetlinks.json for Android TWA deep linking
+    if request.endpoint == 'main.assetlinks':
+        return None
+    
     # Allow public access to app-redirect for magic link redirects
     if request.endpoint == 'main.app_redirect':
         return None
@@ -146,6 +150,14 @@ def apple_app_site_association():
     static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'static')
     return send_from_directory(os.path.join(static_dir, '.well-known'), 
                                 'apple-app-site-association',
+                                mimetype='application/json')
+
+@bp.route('/.well-known/assetlinks.json')
+def assetlinks():
+    """Serve the Asset Links file for Android TWA deep linking."""
+    static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app', 'static')
+    return send_from_directory(os.path.join(static_dir, '.well-known'), 
+                                'assetlinks.json',
                                 mimetype='application/json')
 
 @bp.route('/manifest.json')
