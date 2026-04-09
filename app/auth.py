@@ -141,14 +141,33 @@ def verify_link(token):
     token_hash = hashlib.sha256(token.encode('utf-8')).hexdigest()
     magic_token = MagicLinkToken.query.filter_by(token_hash=token_hash).first()
 
-    if not magic_token or not magic_token.is_valid():
+    # Check if this is an Android TWA request and the token was recently used by Gmail
+    referrer = request.headers.get('Referer', '')
+    is_android_twa = 'android-app://uk.co.hotelsinternational.loyalty.twa' in referrer
+    
+    if not magic_token:
+        logging.warning(f'Invalid magic link token used.')
+        flash('This magic link is invalid or has expired.', 'danger')
+        return redirect(url_for('auth.login'))
+    
+    # For Android TWA: allow if token was used within last 30 seconds and by Gmail
+    if is_android_twa and magic_token.used_at:
+        time_since_use = (datetime.datetime.utcnow() - magic_token.used_at).total_seconds()
+        if time_since_use <= 30:  # Within 30 seconds
+            logging.info(f'Allowing Android TWA magic link reuse (used {time_since_use:.1f}s ago by Gmail)')
+        else:
+            logging.warning(f'Android TWA magic link token used too long after initial use ({time_since_use:.1f}s ago).')
+            flash('This magic link is invalid or has expired.', 'danger')
+            return redirect(url_for('auth.login'))
+    elif not magic_token.is_valid():
         logging.warning(f'Invalid or expired magic link token used.')
         flash('This magic link is invalid or has expired.', 'danger')
         return redirect(url_for('auth.login'))
 
-    # Mark token as used
-    magic_token.used_at = datetime.datetime.utcnow()
-    db.session.commit()
+    # Mark token as used if not already used
+    if not magic_token.used_at:
+        magic_token.used_at = datetime.datetime.utcnow()
+        db.session.commit()
 
     # Log the user in. Fetch customer data from EPOS Now to populate the session.
     session.clear()
