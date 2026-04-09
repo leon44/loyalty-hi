@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "uk.co.hotelsinternational.loyalty.twa",
+    "sha256_cert_fingerprints": ["08:38:5E:1A:25:CE:F0:3F:51:C3:8F:32:6F:98:AC:62:1E:EC:CD:84:97:8F:D0:8E:CA:D7:7D:75:0E:BF:22:35"]
+  }
+}]

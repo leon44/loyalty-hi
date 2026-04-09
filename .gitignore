@@ -31,5 +31,7 @@ app/*.json
 *.json
 # But allow the Apple App Site Association file
 !app/static/.well-known/apple-app-site-association
+# Allow Asset Links file for Android TWA
+!app/static/.well-known/assetlinks.json
 # Allow PWA manifest file
 !app/static/manifest.json
