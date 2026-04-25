@@ -36,19 +36,30 @@
 <script>
     // Detect device and redirect to appropriate app store
     const userAgent = navigator.userAgent;
-    const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+    console.log('User Agent:', userAgent);
+    
+    // More comprehensive iOS detection
+    const isIOS = /iPhone|iPad|iPod|Macintosh/i.test(userAgent) && /Mobile/i.test(userAgent);
     const isAndroid = /Android/i.test(userAgent);
     
-    if (isIOS) {
-        window.location.href = "https://apps.apple.com/app/id6760557044";
-    } else if (isAndroid) {
-        window.location.href = "https://play.google.com/store/apps/details?id=uk.co.hotelsinternational.loyalty.twa";
-    } else {
-        // Desktop users - show both options or redirect to a landing page
-        // For now, keep them on this page with both options visible
-        document.querySelector('.spinner-border').style.display = 'none';
-        document.querySelector('p[class="lead"]').textContent = 'Choose your platform to download the app:';
-    }
+    console.log('Is iOS:', isIOS);
+    console.log('Is Android:', isAndroid);
+    
+    // Add a small delay before redirect
+    setTimeout(() => {
+        if (isIOS) {
+            console.log('Redirecting to App Store...');
+            window.location.href = "https://apps.apple.com/app/id6760557044";
+        } else if (isAndroid) {
+            console.log('Redirecting to Play Store...');
+            window.location.href = "https://play.google.com/store/apps/details?id=uk.co.hotelsinternational.loyalty.twa";
+        } else {
+            // Desktop users - show both options or redirect to a landing page
+            console.log('Desktop user detected');
+            document.querySelector('.spinner-border').style.display = 'none';
+            document.querySelector('p[class="lead"]').textContent = 'Choose your platform to download the app:';
+        }
+    }, 1000); // 1 second delay
 </script>
 
 <style>

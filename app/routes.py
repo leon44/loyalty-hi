@@ -34,6 +34,10 @@ def require_login():
     if request.endpoint == 'main.app_redirect':
         return None
     
+    # Allow public access to app download page
+    if request.endpoint == 'main.app_download':
+        return None
+    
     # Allow public access to PWA files
     if request.endpoint in ['main.manifest', 'main.service_worker']:
         return None
