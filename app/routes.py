@@ -243,3 +243,8 @@ def app_redirect():
     </body>
     </html>
     '''
+
+@bp.route('/app')
+def app_download():
+    """Redirect page that sends users to appropriate app store."""
+    return render_template('app_download.html')
