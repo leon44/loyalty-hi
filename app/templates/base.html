@@ -71,13 +71,21 @@
     {% endif %}
     
     <script>
-        // Auto-redirect iOS browser users to App Store (but not in-app webview)
-        {% if not is_in_app %}
+        // Device detection variables (accessible to all script sections)
         const userAgent = navigator.userAgent;
         const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+        const isAndroid = /Android/i.test(userAgent);
+        
+        // Auto-redirect iOS browser users to App Store (but not in-app webview)
+        {% if not is_in_app %}
+        // Check if already in TWA (TWA user agent contains specific indicators)
+        const isTWA = /wv/i.test(userAgent) && /uk\.co\.hotelsinternational\.loyalty\.twa/i.test(userAgent);
         
         if (isIOS) {
             window.location.href = "https://apps.apple.com/app/id6760557044";
+        } else if (isAndroid && !isTWA) {
+            // Redirect Android browsers to Play Store, but not TWA users
+            window.location.href = "https://play.google.com/store/apps/details?id=uk.co.hotelsinternational.loyalty.twa";
         }
         {% endif %}
         
@@ -93,9 +101,6 @@
         let deferredPrompt;
         const installContainer = document.getElementById('pwa-install-container');
         const installBtn = document.getElementById('pwa-install-btn');
-        
-        // Detect if user is on Android
-        const isAndroid = /Android/i.test(navigator.userAgent);
         
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent the mini-infobar from appearing on mobile
