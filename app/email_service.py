@@ -15,10 +15,10 @@ FROM_NAME = 'Hotels International'
 
 from flask import current_app
 
-def send_magic_link(recipient_email, magic_link):
-    """Sends a magic link email using MailJet's SMTP server."""
+def send_login_code(recipient_email, code):
+    """Sends a 4-digit login code email using MailJet's SMTP server."""
     if current_app.debug:
-        logging.info(f'Magic link for {recipient_email}: {magic_link}')
+        logging.info(f'Login code for {recipient_email}: {code}')
         return True
 
     if not MJ_APIKEY_PUBLIC or not MJ_APIKEY_PRIVATE:
@@ -27,20 +27,23 @@ def send_magic_link(recipient_email, magic_link):
 
     # Create the email message
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = 'Loyalty Login Link'
+    msg['Subject'] = f'Your Hotels International Login Code: {code}'
     msg['From'] = f'{FROM_NAME} <{FROM_EMAIL}>'
     msg['To'] = recipient_email
 
     # Create the plain-text and HTML version of your message
-    text = f'Here is your magic link to log in: {magic_link}'
+    text = f'Your Hotels International login code is: {code}\n\nThis code expires in 15 minutes and can be used up to 4 times.'
     html = f'''
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h3 style="color: #333;">Your Magic Login Link</h3>
-        <p style="color: #666;">Click the button below to log in to your Hotels International Loyalty account:</p>
-        <p style="margin: 30px 0;">
-            <a href="{magic_link}" style="display: inline-block; padding: 12px 24px; background-color: #1a1a1a; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">Log In to Your Account</a>
+        <h3 style="color: #333;">Your Login Code</h3>
+        <p style="color: #666;">Please enter this 4-digit code in the app to log in to your Hotels International Loyalty account:</p>
+        <div style="background-color: #f8f8f8; border: 2px solid #1a1a1a; padding: 20px; text-align: center; margin: 30px 0; border-radius: 8px;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1a1a1a;">{code}</span>
+        </div>
+        <p style="color: #999; font-size: 14px;">
+            <strong>Important:</strong> This code expires in 15 minutes and can be used up to 4 times.<br>
+            If you didn't request this code, you can safely ignore this email.
         </p>
-        <p style="color: #999; font-size: 12px;">Or copy and paste this link: <a href="{magic_link}" style="color: #1a1a1a;">{magic_link}</a></p>
     </div>
     '''
 
@@ -58,8 +61,8 @@ def send_magic_link(recipient_email, magic_link):
             server.starttls()  # Secure the connection
             server.login(MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE)
             server.sendmail(FROM_EMAIL, recipient_email, msg.as_string())
-            logging.info(f'Successfully sent magic link email to {recipient_email}.')
+            logging.info(f'Successfully sent login code email to {recipient_email}.')
         return True
     except Exception as e:
-        logging.error(f'Failed to send magic link email to {recipient_email}: {e}')
+        logging.error(f'Failed to send login code email to {recipient_email}: {e}')
         return False

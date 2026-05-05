@@ -1,16 +1,17 @@
 import datetime
-import hashlib
-import secrets
 import logging
+import random
+import string
+import jwt
 from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email
 
 from app import db
-from app.models import MagicLinkToken, RateLimit
+from app.models import RateLimit
 from app.epos_client import EposNowClient
-from app.email_service import send_magic_link
+from app.email_service import send_login_code
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,7 +25,28 @@ RATE_LIMIT_IP_HOUR = 20
 
 class EmailForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Send Magic Link')
+    submit = SubmitField('Send Login Code')
+
+def generate_login_token(email, code):
+    """Generate JWT token for login code verification"""
+    payload = {
+        'email': email,
+        'code': code,
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
+        'attempts': 0,
+        'iat': datetime.datetime.utcnow()
+    }
+    return jwt.encode(payload, current_app.secret_key, algorithm='HS256')
+
+def verify_login_token(token):
+    """Verify and decode JWT token"""
+    try:
+        payload = jwt.decode(token, current_app.secret_key, algorithms=['HS256'])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
 
 def check_rate_limit(key, limit, period_seconds=3600):
     """Checks and increments a rate limit counter in the database."""
@@ -81,52 +103,19 @@ def login():
             # Still show the same page to prevent user enumeration
             return redirect(url_for('auth.check_inbox'))
 
-        # Generate token
-        token = secrets.token_urlsafe(32)
-        token_hash = hashlib.sha256(token.encode('utf-8')).hexdigest()
-        expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=MAGIC_LINK_EXPIRATION_MINUTES)
+        # Generate 4-digit code and JWT token
+        code = ''.join(random.choices(string.digits, k=4))
+        token = generate_login_token(email, code)
 
-        new_token = MagicLinkToken(
-            email=email,
-            token_hash=token_hash,
-            expires_at=expires_at,
-            request_ip=ip_address,
-            user_agent=request.user_agent.string
-        )
-        db.session.add(new_token)
-        db.session.commit()
-
-        # Generate magic link URL
-        # Check if request is from in-app webview
-        user_agent = request.user_agent.string
-        user_agent_lower = user_agent.lower()
-        x_requested_with = request.headers.get('X-Requested-With', '')
+        # Send email with 4-digit code
+        send_login_code(email, code)
         
-        # Log for debugging
-        logging.info(f'Magic link request - User-Agent: {user_agent}')
-        logging.info(f'Magic link request - X-Requested-With: {x_requested_with}')
-        
-        # Detect iOS webview by custom User-Agent
-        # Webview: "LoyaltyApp/1.0 (iOS; Hotels International)"
-        # Safari:  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.4 Mobile/15E148 Safari/604.1"
-        is_in_app = 'loyaltyapp' in user_agent_lower or x_requested_with == 'LoyaltyApp'
-        
-        if is_in_app:
-            # Use HTTPS redirect page for in-app webview
-            # This ensures Gmail recognizes the link as clickable
-            verify_url = url_for('auth.verify_link', token=token, _external=True)
-            magic_link_url = url_for('main.app_redirect', url=verify_url, _external=True)
-            logging.info(f'Generated in-app redirect link for {email}: {magic_link_url}')
-        else:
-            # Use standard HTTPS URL for web browsers
-            magic_link_url = url_for('auth.verify_link', token=token, _external=True)
-            logging.info(f'Generated web magic link for {email}')
-        
-        # Send email with magic link via MailJet
-        send_magic_link(email, magic_link_url)
+        # Store email and token in session for code entry page
+        session['pending_email'] = email
+        session['login_token'] = token
         
         # Log for debugging purposes
-        logging.info(f'Generated magic link for {email}: {magic_link_url}')
+        logging.info(f'Generated 4-digit login code for {email}: {code}')
 
         return redirect(url_for('auth.check_inbox'))
 
@@ -136,59 +125,55 @@ def login():
 def check_inbox():
     return render_template('check_inbox.html')
 
-@bp.route('/login/verify/<token>')
-def verify_link(token):
-    token_hash = hashlib.sha256(token.encode('utf-8')).hexdigest()
-    magic_token = MagicLinkToken.query.filter_by(token_hash=token_hash).first()
-
-    # Check if this is an Android TWA request and the token was recently used by Gmail
-    referrer = request.headers.get('Referer', '')
-    is_android_twa = 'android-app://uk.co.hotelsinternational.loyalty.twa' in referrer
+@bp.route('/login/verify-code', methods=['POST'])
+def verify_code():
+    # Get token from session
+    token = session.get('login_token')
+    user_code = request.form.get('code', '')
     
-    if not magic_token:
-        logging.warning(f'Invalid magic link token used.')
-        flash('This magic link is invalid or has expired.', 'danger')
-        return redirect(url_for('auth.login'))
+    if not token or not user_code:
+        flash('Session expired. Please request a new code.', 'danger')
+        return render_template('check_inbox.html')
     
-    # For Android TWA: allow if token was used within last 30 seconds and by Gmail
-    if is_android_twa and magic_token.used_at:
-        time_since_use = (datetime.datetime.utcnow() - magic_token.used_at).total_seconds()
-        if time_since_use <= 30:  # Within 30 seconds
-            logging.info(f'Allowing Android TWA magic link reuse (used {time_since_use:.1f}s ago by Gmail)')
-        else:
-            logging.warning(f'Android TWA magic link token used too long after initial use ({time_since_use:.1f}s ago).')
-            flash('This magic link is invalid or has expired.', 'danger')
-            return redirect(url_for('auth.login'))
-    elif not magic_token.is_valid():
-        logging.warning(f'Invalid or expired magic link token used.')
-        flash('This magic link is invalid or has expired.', 'danger')
-        return redirect(url_for('auth.login'))
-
-    # Mark token as used if not already used
-    if not magic_token.used_at:
-        magic_token.used_at = datetime.datetime.utcnow()
-        db.session.commit()
-
+    # Verify JWT token
+    payload = verify_login_token(token)
+    
+    if not payload:
+        flash('Session expired. Please request a new code.', 'danger')
+        return render_template('check_inbox.html')
+    
+    # Check if code matches
+    if payload['code'] != user_code:
+        flash('Invalid code. Please check and try again.', 'danger')
+        logging.warning(f'Invalid login code attempt for {payload["email"]}: {user_code}')
+        return render_template('check_inbox.html')
+    
+    # Check attempts (stored in token)
+    if payload.get('attempts', 0) >= 4:
+        flash('Too many attempts. Please request a new code.', 'danger')
+        return render_template('check_inbox.html')
+    
+    logging.info(f'Successful login for {payload["email"]} using 4-digit code')
+    
     # Log the user in. Fetch customer data from EPOS Now to populate the session.
     session.clear()
-    session['user_email'] = magic_token.email
+    session['user_email'] = payload['email']
     session.permanent = True
     current_app.permanent_session_lifetime = datetime.timedelta(days=14)
 
     try:
         epos_client = EposNowClient()
-        customer = epos_client.get_customer_by_email(magic_token.email)
-        print(customer)
+        customer = epos_client.get_customer_by_email(payload['email'])
         if customer:
             session['customer_id'] = customer.get('Id')
             session['customer_name'] = f"{customer.get('Forename', '')} {customer.get('Surname', '')}".strip()
             logging.info(f"Existing customer '{session['customer_name']}' logged in.")
         else:
-            logging.warning(f"New user with email {magic_token.email} logged in. No profile found in EPOS Now.")
+            logging.warning(f"New user with email {payload['email']} logged in. No profile found in EPOS Now.")
             session['customer_id'] = None
             session['customer_name'] = 'New User'
     except Exception as e:
-        logging.error(f'Failed to fetch EPOS customer data for {magic_token.email}: {e}')
+        logging.error(f'Failed to fetch EPOS customer data for {payload["email"]}: {e}')
         flash('Could not retrieve your customer profile at this time. Please try again later.', 'warning')
         # Allow login even if EPOS lookup fails, user will be treated as new.
         session['customer_id'] = None

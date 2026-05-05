@@ -1,19 +1,74 @@
 {% extends "base.html" %}
 
-{% block title %}Check Your Inbox{% endblock %}
+{% block title %}Enter Your Code{% endblock %}
 
 {% block content %}
     <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title">Check Your Inbox</h2>
-                    <p class="lead">We've sent a magic link to your email address. Click the link to sign in.</p>
-                    <p class="text-muted">The link will expire in 15 minutes.</p>
+                    <h2 class="card-title text-center">Enter Your Login Code</h2>
+                    <p class="lead text-center">We've sent a 4-digit code to your email address.</p>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" action="{{ url_for('auth.verify_code') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        {% if session.pending_email %}
+                            <div class="mb-3">
+                                <div class="alert alert-info">
+                                    <strong>The code was sent to {{ session.pending_email }}</strong>
+                                </div>
+                                <input type="hidden" name="email" value="{{ session.pending_email }}">
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            <label for="code" class="form-label">4-Digit Code</label>
+                            <input type="text" class="form-control form-control-lg text-center" id="code" name="code" 
+                                   maxlength="4" pattern="[0-9]{4}" required 
+                                   style="font-size: 24px; letter-spacing: 8px; font-weight: bold;">
+                            <div class="form-text"></div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Verify Code</button>
+                        </div>
+                    </form>
+                    
                     <hr>
-                    <p>Didn't receive an email? Check your spam folder or <a href="{{ url_for('auth.login') }}">try again</a>.</p>
+                    <div class="text-center">
+                        <p class="text-muted">The code expires in 15 minutes and can be used up to 4 times.</p>
+                        <p>Didn't receive an email? Check your spam folder or <a href="{{ url_for('auth.login') }}">try again</a>.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <script>
+        // Auto-focus on code input when email is entered
+        document.getElementById('email').addEventListener('blur', function() {
+            if (this.value) {
+                document.getElementById('code').focus();
+            }
+        });
+        
+        // Only allow digits in code field
+        document.getElementById('code').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
 {% endblock %}
