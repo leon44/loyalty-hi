@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <h2 class="card-title text-center">Start collecting points</h2>
                     <p class="text-center text-muted">Enter your email to receive a secure login code to access your account or to set up a new account if you don't have one yet.</p>
-                    <form method="POST" action="{{ url_for('auth.login') }}">
+                    <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
                         {{ form.hidden_tag() }} {# CSRF token #}
                         <div class="form-group">
                             {{ form.email.label(class="sr-only") }}
@@ -18,8 +18,17 @@
                                 <span class="text-danger">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        {{ form.submit(class="btn btn-primary btn-block btn-lg") }}
+                        {{ form.submit(class="btn btn-primary btn-block btn-lg", id="submitBtn") }}
                     </form>
+                    
+                    <script>
+                        document.getElementById('loginForm').addEventListener('submit', function(e) {
+                            const submitBtn = document.getElementById('submitBtn');
+                            submitBtn.disabled = true;
+                            submitBtn.innerHTML = 'Sending...';
+                            submitBtn.classList.add('disabled');
+                        });
+                    </script>
                 </div>
             </div>
         </div>

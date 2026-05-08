@@ -100,8 +100,7 @@ def login():
         if not check_rate_limit(f'email:{email}', email_limit) or \
            not check_rate_limit(f'ip:{ip_address}', ip_limit):
             logging.warning(f'Rate limit exceeded for email {email} or IP {ip_address}')
-            # Still show the same page to prevent user enumeration
-            return redirect(url_for('auth.check_inbox'))
+            return render_template('rate_limit_exceeded.html')
 
         # Generate 4-digit code and JWT token
         code = ''.join(random.choices(string.digits, k=4))
