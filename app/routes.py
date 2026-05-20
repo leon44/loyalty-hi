@@ -89,7 +89,6 @@ def dashboard():
                     'EmailAddress': session['user_email'],
                     'ContactNumber': form.phone.data,
                     'Type': 861, # Customer Type ID
-                    'MaxCredit': 100.00, # Set default credit limit
                     'MarketingConsent': {
                         'Email': form.marketing_email.data,
                         'Text': form.marketing_text.data
