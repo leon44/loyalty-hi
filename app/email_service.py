@@ -32,7 +32,7 @@ def send_login_code(recipient_email, code):
     msg['To'] = recipient_email
 
     # Create the plain-text and HTML version of your message
-    text = f'Your Hotels International login code is: {code}\n\nThis code expires in 15 minutes and can be used up to 4 times.'
+    text = f'Your Hotels International login code is: {code}\n\nThis code expires in 15 minutes.'
     html = f'''
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h3 style="color: #333;">Your Login Code</h3>
@@ -41,7 +41,7 @@ def send_login_code(recipient_email, code):
             <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1a1a1a;">{code}</span>
         </div>
         <p style="color: #999; font-size: 14px;">
-            <strong>Important:</strong> This code expires in 15 minutes and can be used up to 4 times.<br>
+            <strong>Important:</strong> This code expires in 15 minutes.<br>
             If you didn't request this code, you can safely ignore this email.
         </p>
     </div>
